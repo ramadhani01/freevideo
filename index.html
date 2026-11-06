@@ -132,7 +132,7 @@ h1{font-size:1.35rem;margin:12px 0 6px}
   countShare();render();
 
   /* ====== DAFTAR VIDEO (hanya root, tanpa folder) ====== */
-  var videos=[],loaded=false;
+  var videos=[],loaded=false,folderInfo="";
   function loadVideos(){
     $("videoGrid").innerHTML='<div class="state" style="grid-column:1/-1"><h2>Memuat…</h2></div>';
     return fetch(SUPABASE_URL+"/rest/v1/app_data?id=eq.1&select=videos",{headers:{apikey:SUPABASE_KEY,Authorization:"Bearer "+SUPABASE_KEY}})
@@ -140,6 +140,7 @@ h1{font-size:1.35rem;margin:12px 0 6px}
       .then(function(rows){
         var d=(rows&&rows[0]&&rows[0].videos)||{};
         videos=(Array.isArray(d.rootVideos)?d.rootVideos:[]).slice();
+        folderInfo=(Array.isArray(d.folders)?d.folders:[]).map(function(f){return esc(f.name)+" ("+((f.videos||[]).length)+")";}).join(", ");
         if(!rows||!rows.length)throw new Error("data kosong");
         loaded=true;renderList();
       })
@@ -156,7 +157,7 @@ h1{font-size:1.35rem;margin:12px 0 6px}
   }
   function renderList(){
     $("totalCount").textContent=videos.length;
-    if(!videos.length){$("videoGrid").innerHTML='<div class="state" style="grid-column:1/-1"><h2>Belum ada video</h2></div>';return;}
+    if(!videos.length){$("videoGrid").innerHTML='<div class="state" style="grid-column:1/-1"><h2>Belum ada video di root</h2>'+(folderInfo?'<p>Video ada di folder: '+folderInfo+'</p>':'<p>Data tidak punya folder maupun video.</p>')+'</div>';return;}
     var normal="",land="";
     videos.forEach(function(v,i){if(v.landscape)land+=card(v,i);else normal+=card(v,i);});
     $("videoGrid").innerHTML=normal+(land?'<div class="landscape-grid">'+land+'</div>':"");
