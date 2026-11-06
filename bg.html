@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<title>Bagikan ke Teman</title>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
+<style>
+:root{--bg:#f5f7f6;--card:#fff;--text:#1a2421;--muted:#6b7a75;--line:#dde4e1;--green:#1fa855;--green-d:#168a44;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101513;--card:#1a211e;--text:#eef3f1;--muted:#93a39d;--line:#2c3733}}
+:root[data-theme="dark"]{--bg:#101513;--card:#1a211e;--text:#eef3f1;--muted:#93a39d;--line:#2c3733}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+#gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
+.card{width:100%;max-width:420px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px 22px;text-align:center}
+.emoji{font-size:3rem;line-height:1}
+h1{font-size:1.35rem;margin:12px 0 6px}
+.card p{color:var(--muted);margin:0 0 20px}
+.bar{height:12px;background:var(--line);border-radius:99px;overflow:hidden;margin:0 0 8px}
+.fill{height:100%;width:0;background:var(--green);border-radius:99px;transition:width .4s}
+.count{font-weight:700;margin:0 0 20px}
+.btn{width:100%;border:0;border-radius:12px;background:var(--green);color:#fff;font:inherit;font-weight:700;font-size:1.05rem;padding:14px;cursor:pointer}
+.btn:active{background:var(--green-d)}
+[hidden]{display:none!important}
+
+/* ===== daftar video (gaya kartu sama dengan vid.html) ===== */
+#list{background:#14151A;color:#fff;min-height:100vh;padding:20px}
+.lhead{max-width:1200px;margin:0 auto 24px;padding-bottom:14px;border-bottom:1px solid #1C1F26;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.logo{font-weight:800;font-size:22px;color:#f59b00}
+.total{color:#555;font-size:14px}.total span{color:#f59b00;font-weight:bold}
+.video-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px}
+@media (min-width:640px){.video-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px}}
+.video-card{background:#1C1F26;border-radius:10px;overflow:hidden;cursor:pointer;transition:all .3s;border:1px solid #1f1f1f;display:block;color:#fff;position:relative;aspect-ratio:9/16}
+.video-card:hover{transform:translateY(-5px);border-color:#f59b00;box-shadow:0 8px 25px rgba(245,155,0,.12)}
+.video-card .thumb{width:100%;aspect-ratio:9/16;background:#14151A;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center}
+.video-card .thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:.4s;background:#14151A}
+.video-card:hover .thumb img{transform:scale(1.02)}
+.video-card .info{padding:10px 12px;position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.85))}
+.video-card .info h3{font-size:11px;font-weight:600;margin:0 0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff}
+@media (min-width:640px){.video-card .info h3{font-size:13px}}
+.video-card .video-duration-badge{position:absolute;bottom:34px;right:8px;background:rgba(0,0,0,.8);color:#fff;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;z-index:2}
+.video-card.landscape{aspect-ratio:16/9}.video-card.landscape .thumb{aspect-ratio:16/9}
+.landscape-grid{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:4px}
+@media (min-width:640px){.landscape-grid{grid-template-columns:repeat(3,1fr)}}
+.state{max-width:1200px;margin:60px auto;text-align:center;color:#888}
+.state h2{color:#f59b00;margin:0 0 6px}
+
+/* pemutar */
+#player{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px}
+#player .box{width:100%;max-width:520px}
+#player video,#player iframe{width:100%;max-height:75vh;background:#000;border:0;border-radius:12px;aspect-ratio:9/16}
+#player .ptitle{margin:10px 0;font-weight:700;color:#fff;word-break:break-word}
+#player .close{background:#1C1F26;border:1px solid #333;color:#f59b00;border-radius:8px;padding:8px 16px;font:inherit;cursor:pointer}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="card">
+    <div class="emoji" id="emoji">🎁</div>
+    <h1 id="title">Buka 1 Video Gratis</h1>
+    <p id="desc">Bagikan ke 5 temanmu untuk membuka 1 video gratis.</p>
+    <div class="bar"><div class="fill" id="fill"></div></div>
+    <div class="count" id="count">Proses 0/5</div>
+    <button type="button" class="btn" id="share">Bagikan</button>
+    <button type="button" class="btn" id="pick" hidden>Pilih video</button>
+  </div>
+</div>
+
+<div id="list" hidden>
+  <div class="lhead">
+    <div class="logo">PILIH VIDEO</div>
+    <div class="total"><span id="totalCount">0</span> video</div>
+  </div>
+  <div class="video-grid" id="videoGrid"></div>
+</div>
+
+<div id="player" hidden>
+  <div class="box">
+    <div id="pslot"></div>
+    <div class="ptitle" id="ptitle"></div>
+    <button type="button" class="close" id="pclose">Tutup</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  /* ====== PENGATURAN ====== */
+  var TARGET=5, KEY="bagikan-progress-v1";
+  var LINK="https://whatsapp.com/channel/0029VbESt7p2UPBAqtbNEi0I";
+  var SUPABASE_URL="https://epwgprccqumavuequlfp.supabase.co";
+  var SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVwd2dwcmNjcXVtYXZ1ZXF1bGZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0MDg2MDYsImV4cCI6MjEwNzk4NDYwNn0.peXjRSRWrzVuwLV0nMvX4Uy9Pb83Cui9ePqPb7RrY3U";
+
+  var $=function(id){return document.getElementById(id)};
+  var mem={count:0,pending:false};
+  function load(){try{var s=JSON.parse(localStorage.getItem(KEY));if(s&&typeof s.count==="number")return s;}catch(e){}return mem;}
+  function save(s){mem=s;try{localStorage.setItem(KEY,JSON.stringify(s));}catch(e){}}
+  var state=load();
+
+  function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
+
+  /* ====== PROGRES BAGIKAN ====== */
+  function render(){
+    var c=Math.min(state.count,TARGET), done=c>=TARGET;
+    $("fill").style.width=(c/TARGET*100)+"%";
+    $("count").textContent=done?"Selesai 5/5":"Proses "+c+"/"+TARGET;
+    $("share").hidden=done;
+    $("pick").hidden=!done;
+    if(done){
+      $("emoji").textContent="🎉";
+      $("title").textContent="Video Terbuka!";
+      $("desc").textContent="Terima kasih sudah berbagi. Silakan pilih videonya.";
+    }
+  }
+  function countShare(){
+    if(!state.pending||state.count>=TARGET)return;
+    state.pending=false;state.count+=1;save(state);render();
+  }
+  $("share").onclick=function(){
+    state.pending=true;save(state);
+    var pesan="Halo! Gabung ke saluran WhatsApp saya ya: "+LINK;
+    window.open("https://wa.me/?text="+encodeURIComponent(pesan),"_blank");
+  };
+  var wasHidden=false;
+  document.addEventListener("visibilitychange",function(){
+    if(document.hidden){wasHidden=true;}
+    else if(wasHidden){wasHidden=false;countShare();}
+  });
+  countShare();render();
+
+  /* ====== DAFTAR VIDEO (hanya root, tanpa folder) ====== */
+  var videos=[],loaded=false;
+  function loadVideos(){
+    $("videoGrid").innerHTML='<div class="state" style="grid-column:1/-1"><h2>Memuat…</h2></div>';
+    return fetch(SUPABASE_URL+"/rest/v1/app_data?id=eq.1&select=videos",{headers:{apikey:SUPABASE_KEY,Authorization:"Bearer "+SUPABASE_KEY}})
+      .then(function(r){if(!r.ok)throw new Error("status "+r.status);return r.json();})
+      .then(function(rows){
+        var d=(rows&&rows[0]&&rows[0].videos)||{};
+        videos=Array.isArray(d.rootVideos)?d.rootVideos:[];
+        loaded=true;renderList();
+      })
+      .catch(function(){
+        $("totalCount").textContent="0";
+        $("videoGrid").innerHTML='<div class="state" style="grid-column:1/-1"><h2>Daftar video belum bisa dimuat</h2><p>Halaman ini perlu dibuka dari hosting Anda sendiri agar bisa terhubung ke data video.</p></div>';
+      });
+  }
+  function card(v,i){
+    var dur=(v.showDuration&&v.duration)?'<div class="video-duration-badge">'+esc(v.duration)+'</div>':"";
+    return '<div class="video-card'+(v.landscape?' landscape':'')+'" data-i="'+i+'">'+
+      '<div class="thumb"><img src="'+esc(v.thumbnail)+'" alt="'+esc(v.title)+'" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility=\'hidden\'">'+dur+'</div>'+
+      '<div class="info"><h3 title="'+esc(v.title)+'">'+esc(v.title)+'</h3></div></div>';
+  }
+  function renderList(){
+    $("totalCount").textContent=videos.length;
+    if(!videos.length){$("videoGrid").innerHTML='<div class="state" style="grid-column:1/-1"><h2>Belum ada video</h2></div>';return;}
+    var normal="",land="";
+    videos.forEach(function(v,i){if(v.landscape)land+=card(v,i);else normal+=card(v,i);});
+    $("videoGrid").innerHTML=normal+(land?'<div class="landscape-grid">'+land+'</div>':"");
+  }
+  $("videoGrid").addEventListener("click",function(e){
+    var el=e.target.closest(".video-card");if(!el)return;
+    play(videos[+el.getAttribute("data-i")]);
+  });
+  $("pick").onclick=function(){
+    $("gate").hidden=true;$("list").hidden=false;window.scrollTo(0,0);
+    if(!loaded)loadVideos();
+  };
+
+  /* ====== PEMUTAR ====== */
+  var hls=null;
+  function convertVidey(u){var m=String(u||"").trim().match(/^https?:\/\/(?:www\.)?videy\.co\/v\/?\?(?:[^#]*&)?id=([A-Za-z0-9_-]+)/i);return m?"https://cdn.videy.co/"+m[1]+".mp4":u;}
+  function convertDood(u){var m=String(u||"").trim().match(/^(https?:\/\/(?:www\.)?(?:dood(?:stream)?\.[a-z]+|d0o0d\.[a-z]+|d0000d\.[a-z]+|d000d\.[a-z]+|ds2play\.[a-z]+|ds2video\.[a-z]+|dooood\.[a-z]+|doods\.[a-z]+|dsvplay\.[a-z]+|myvidplay\.[a-z]+|playmogo\.[a-z]+|do7go\.[a-z]+|vidply\.[a-z]+))\/(?:d|e|v)\/([A-Za-z0-9_-]+)/i);return m?m[1]+"/e/"+m[2]:null;}
+  function closePlayer(){
+    if(hls){try{hls.destroy();}catch(e){}hls=null;}
+    $("pslot").innerHTML="";$("player").hidden=true;
+  }
+  function play(v){
+    if(!v)return;
+    $("ptitle").textContent=v.title||"";
+    var slot=$("pslot");slot.innerHTML="";
+    var url=convertVidey(v.url), dood=convertDood(url);
+    if(dood){
+      var f=document.createElement("iframe");f.src=dood;f.allowFullscreen=true;f.setAttribute("allow","autoplay; fullscreen");slot.appendChild(f);
+    }else{
+      var vid=document.createElement("video");vid.controls=true;vid.playsInline=true;vid.autoplay=true;
+      if(v.thumbnail)vid.poster=v.thumbnail;
+      slot.appendChild(vid);
+      if(/\.m3u8(\?|$)/i.test(url)&&window.Hls&&Hls.isSupported()){hls=new Hls();hls.loadSource(url);hls.attachMedia(vid);}
+      else{vid.src=url;}
+    }
+    $("player").hidden=false;
+  }
+  $("pclose").onclick=closePlayer;
+})();
+</script>
+</body>
+</html>
