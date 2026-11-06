@@ -113,6 +113,10 @@ h1{font-size:1.35rem;margin:12px 0 6px}
       $("emoji").textContent="🎉";
       $("title").textContent="Video Terbuka!";
       $("desc").textContent="Terima kasih sudah berbagi. Silakan pilih videonya.";
+    }else{
+      $("emoji").textContent="🎁";
+      $("title").textContent="Buka 1 Video Gratis";
+      $("desc").textContent="Bagikan ke 5 temanmu untuk membuka 1 video gratis.";
     }
   }
   function countShare(){
@@ -164,6 +168,8 @@ h1{font-size:1.35rem;margin:12px 0 6px}
   }
   $("videoGrid").addEventListener("click",function(e){
     var el=e.target.closest(".video-card");if(!el)return;
+    if(state.count<TARGET)return;
+    state.count=0;state.pending=false;save(state);
     play(videos[+el.getAttribute("data-i")]);
   });
   $("pick").onclick=function(){
@@ -178,6 +184,7 @@ h1{font-size:1.35rem;margin:12px 0 6px}
   function closePlayer(){
     if(hls){try{hls.destroy();}catch(e){}hls=null;}
     $("pslot").innerHTML="";$("player").hidden=true;
+    $("list").hidden=true;$("gate").hidden=false;render();window.scrollTo(0,0);
   }
   function play(v){
     if(!v)return;
