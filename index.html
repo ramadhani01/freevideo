@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="referrer" content="no-referrer">
-<title>Bagikan ke Teman</title>
+<title>Bagikan ke Grup</title>
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
 <style>
 :root{--bg:#f5f7f6;--card:#fff;--text:#1a2421;--muted:#6b7a75;--line:#dde4e1;--green:#1fa855;--green-d:#168a44;
@@ -62,7 +62,7 @@ h1{font-size:1.35rem;margin:12px 0 6px}
   <div class="card">
     <div class="emoji" id="emoji">🎁</div>
     <h1 id="title">Buka 1 Video Gratis</h1>
-    <p id="desc">Bagikan ke 5 temanmu untuk membuka 1 video gratis.</p>
+    <p id="desc">Bagikan ke 5 grup untuk membuka 1 video gratis.</p>
     <div class="bar"><div class="fill" id="fill"></div></div>
     <div class="count" id="count">Proses 0/5</div>
     <button type="button" class="btn" id="share">Bagikan</button>
@@ -125,7 +125,7 @@ h1{font-size:1.35rem;margin:12px 0 6px}
   }
   $("share").onclick=function(){
     state.pending=true;save(state);
-    var pesan="Halo! Gabung ke saluran WhatsApp saya ya: "+LINK;
+    var pesan="Semua Video Viral Ada di sini yaa: "+LINK;
     window.open("https://wa.me/?text="+encodeURIComponent(pesan),"_blank");
   };
   var wasHidden=false;
